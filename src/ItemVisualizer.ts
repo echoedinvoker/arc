@@ -1,0 +1,37 @@
+import * as d3 from 'd3';
+import { ItemModel } from "./ItemModel";
+import { ScaleGenerator } from './ScaleGenerator';
+import { AxisRenderer } from './AxisRenderer';
+
+export class ItemVisualizer {
+  private group: d3.Selection<SVGGElement, unknown, HTMLElement, undefined>;
+  private scale: ScaleGenerator;
+  private axisRenderer: AxisRenderer;
+  constructor(
+    target: { selector: string, width: number, height: number },
+    margin: { top: number, right: number, bottom: number, left: number },
+    private ranges: number[],
+    private radius: number
+  ) {
+    const svg = d3.select(target.selector).append('svg')
+      .attr('width', target.width)
+      .attr('height', target.height);
+
+    this.group = svg.append('g')
+      .attr('transform', `translate(${margin.left}, ${margin.top})`)
+      .attr('width', target.width - margin.left - margin.right)
+      .attr('height', target.height - margin.top - margin.bottom);
+
+    this.scale = new ScaleGenerator(this.ranges);
+    this.axisRenderer = new AxisRenderer(
+      this.group.append('g'),
+      this.scale,
+      this.radius
+    )
+
+  }
+  update(items: ItemModel) {
+    this.scale.update(items)
+    this.axisRenderer.update()
+  }
+}
