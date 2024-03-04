@@ -1,6 +1,6 @@
-import { ItemModel } from './ItemModel';
+import { Item, ItemModel } from './ItemModel';
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, onSnapshot } from 'firebase/firestore';
 import { ItemVisualizer } from './ItemVisualizer';
 
 const firebaseConfig = {
@@ -15,22 +15,36 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-async function getDishes(db: any) {
-  const dishesCol = collection(db, 'dishes');
-  const dishesSnapshot = await getDocs(dishesCol);
-  const dishesList = dishesSnapshot.docs.map(doc => doc.data());
-  return dishesList;
-}
-
 const itemVisualizer = new ItemVisualizer(
   { selector: '.canvas', width: 600, height: 600 },
   { top: 20, right: 20, bottom: 100, left: 100 },
   [270, 330, 360],
-  200
+  300
 );
 
-getDishes(db).then((data: any) => {
-  const itemModel = new ItemModel(data)
-  itemVisualizer.update(itemModel)
-})
+const itemModel = new ItemModel([], [])
 
+function listenDishes(db: any) {
+  const dishesCol = collection(db, 'dishes');
+  onSnapshot(dishesCol, (doc) => {
+    doc.docChanges().forEach((change: any) => {
+      switch (change.type) {
+        case "added":
+          itemModel.set(change.doc.data(), change.doc.id)
+          break;
+        case "modified": {
+          const item: Item = itemModel.getItem(change.doc.id)!
+          item.name = change.doc.data().name
+          item.orders = change.doc.data().orders
+          break;
+        }
+        case "removed":
+          itemModel.remove(change.doc.id)
+          break;
+      }
+    })
+    itemVisualizer.update(itemModel)
+  })
+}
+
+listenDishes(db)

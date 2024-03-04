@@ -3,8 +3,9 @@ import { ScaleGenerator } from './ScaleGenerator';
 
 export function createRadialAxis(scale: ScaleGenerator, radius: number): (g: d3.Selection<SVGGElement, unknown, HTMLElement, any>) => void {
   return function(g) {
-    const ticks = scale.r.ticks(); // 獲取比例尺的刻度值
-    console.log(scale.r.domain())
+    g.selectAll('line').remove();
+    g.selectAll('text').remove();
+    const ticks = scale.r.ticks(10); // 獲取比例尺的刻度值
 
     ticks.forEach(tick => {
       const angle = (scale.r(tick) * Math.PI) / 180; // 將角度轉換為弧度
