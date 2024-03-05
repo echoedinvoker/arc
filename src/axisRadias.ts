@@ -1,8 +1,8 @@
 import * as d3 from 'd3';
 import { ScaleGenerator } from './ScaleGenerator';
-import { config } from '.';
+import { Config } from './Polar';
 
-export function createRadialAxis(scale: ScaleGenerator, radius: number): (g: d3.Selection<SVGGElement, unknown, HTMLElement, any>) => void {
+export function createRadialAxis(scale: ScaleGenerator, radius: number, config: Config): (g: d3.Selection<SVGGElement, unknown, HTMLElement, any>) => void {
   return function(g) {
     g.selectAll('line').remove();
     g.selectAll('text').remove();

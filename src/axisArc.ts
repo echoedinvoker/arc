@@ -1,8 +1,8 @@
-import { config } from ".";
+import { Config } from "./Polar";
 import { ScaleGenerator } from "./ScaleGenerator";
 import * as d3 from 'd3';
 
-export function createArcAxis(scaleGenerator: ScaleGenerator) {
+export function createArcAxis(scaleGenerator: ScaleGenerator, config: Config) {
   return (selection: d3.Selection<SVGGElement, unknown, HTMLElement, undefined>) => {
     const startAngle = scaleGenerator.r.range().at(0)! * Math.PI / 180; // 轉換為弧度
     const endAngle = scaleGenerator.r.range().at(-1)! * Math.PI / 180; // 轉換為弧度
