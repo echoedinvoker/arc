@@ -83,15 +83,5 @@ export function update() {
   axisRenderer.update()
   arcBarRenderer.update(itemModel)
 }
-// listenDishes(db)
+listenDishes(db)
 // -- firebase for demo
-
-async function update2() {
-  const data: Array<{ name: string, orders: number, color?: string }> = (await d3.json('demo.json'))!
-  data.forEach((d: any) => itemModel.set(d, d.name))
-  scale.update(itemModel)
-  axisRenderer.update()
-  arcBarRenderer.update(itemModel)
-}
-
-update2()
