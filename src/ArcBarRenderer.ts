@@ -101,16 +101,29 @@ export class ArcBarRenderer {
       .style('font-family', this.config.arcTextFamily)
       .style('pointer-events', 'none')
       .attr('text-anchor', 'middle')
-      .attr('dy', this.cbTextPosition)
+      // .attr('dy', this.cbTextPosition)
       .attr('fill', this.config.arcTextColor)
       .transition().duration(this.config.animationDuration)
       .tween('text', function(d: any) {
         const i = d3.interpolate(0, d.orders);
         return (t: any) => d3.select(this).text(Math.floor(i(t)));
       })
+      // .attrTween('transform', (d: any) => {
+      //   const i = d3.interpolate(0, d.orders);
+      //   return (t: any) => `rotate(${(this.cbMiddleAngleTween(i(t)) * 180 / Math.PI)})`;
+      // })
       .attrTween('transform', (d: any) => {
         const i = d3.interpolate(0, d.orders);
-        return (t: any) => `rotate(${(this.cbMiddleAngleTween(i(t)) * 180 / Math.PI)})`;
+        return (t: any) => {
+          // 计算当前插值角度对应的旋转角度
+          const currentAngle = this.cbMiddleAngleTween(i(t)) * 180 / Math.PI;
+          // 动态计算文本位置
+          const textPosition = this.cbTextPosition(d);
+          // 应用原始旋转以按圆弧定位文本
+          // 然后应用反向旋转，使文本在视觉上保持水平
+          // 使用动态计算的位置值
+          return `rotate(${currentAngle}) translate(0, ${textPosition}) rotate(${-currentAngle})`;
+        };
       })
       .on('end', function(d: any) {
         d3.select(this).attr('data-prev-angle', d.orders);
