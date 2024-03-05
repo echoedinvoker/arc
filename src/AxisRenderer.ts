@@ -7,7 +7,6 @@ import { scale } from '.';
 export class AxisRenderer {
   radialAxis: (selection: d3.Selection<SVGGElement, unknown, HTMLElement, undefined>) => void;
   arcAxis: (selection: d3.Selection<SVGGElement, unknown, HTMLElement, undefined>) => void;
-  namesAxis: (selection: d3.Selection<SVGGElement, unknown, HTMLElement, undefined>) => void;
 
   constructor(
     private arcAxisGroup: d3.Selection<SVGGElement, unknown, HTMLElement, undefined>,
@@ -16,17 +15,20 @@ export class AxisRenderer {
   ) {
     this.radialAxis = createRadialAxis(scale, radius);
     this.arcAxis = createArcAxis(scale);
-    this.namesAxis = d3.axisBottom(scale.x)
-
   }
 
   update() {
+    const scaleXCopied = scale.x.copy();
+    console.log('scaleXCopied', scaleXCopied);
+    scaleXCopied.domain(scale.x.domain().slice().reverse());
+    const namesAxis = d3.axisBottom(scaleXCopied)
+
     this.arcAxisGroup
       .call(this.radialAxis)
       .call(this.arcAxis)
       .attr('transform', `translate(300, 300)`);
     this.namesGroup
-      .call(this.namesAxis)
+      .call(namesAxis)
       .attr('transform', `translate(${300 - scale.x.range().at(0)!}, 300)`);
     this.namesGroup.selectAll('text')
       .attr('transform', `rotate(-45)`)
