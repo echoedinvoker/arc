@@ -94,7 +94,7 @@ export interface Config {
   }
 }
 
-interface hasType {
+export interface hasType {
   type: string
   [key: string]: any
 }
@@ -166,6 +166,8 @@ export class Polar {
   }
 }
 
+
+// testing
 const polar = new Polar()
 
 d3.select('#added').on('click', () => {
