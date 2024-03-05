@@ -6,6 +6,7 @@ export declare class ArcBarRenderer {
     private group;
     private config;
     private scale;
+    private remMax;
     constructor(group: d3.Selection<SVGGElement, unknown, HTMLElement, undefined>, config: Config, scale: ScaleGenerator);
     cbStartAngle: () => number;
     cbEndAngle: (d: any) => number;

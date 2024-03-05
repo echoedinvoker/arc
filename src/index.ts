@@ -73,6 +73,7 @@ export interface hasType {
 }
 
 export class Polar {
+  private group: d3.Selection<SVGGElement, unknown, HTMLElement, undefined>
   private config: Config
   private scale: ScaleGenerator
   itemModel: ItemModel
@@ -80,33 +81,67 @@ export class Polar {
   private arcBarRenderer: ArcBarRenderer
   constructor(customConfig?: Partial<Config>) {
     this.config = { ...config, ...customConfig }
-    const svg = d3.select(config.selector).append('svg')
-      .attr('width', config.svgWidth)
-      .attr('height', config.svgHeight);
+    const svg = d3.select(this.config.selector).append('svg')
+      .attr('width', this.config.svgWidth)
+      .attr('height', this.config.svgHeight);
 
-    const group = svg.append('g')
-      .attr('transform', `translate(${config.marginLeft / 2}, ${config.marginTop / 2})`)
-      .attr('width', config.svgWidth - config.marginLeft - config.marginRight)
-      .attr('height', config.svgHeight - config.marginTop - config.marginBottom);
+    this.group = svg.append('g')
+      .attr('transform', `translate(${this.config.marginLeft / 2}, ${this.config.marginTop / 2})`)
+      .attr('width', this.config.svgWidth - this.config.marginLeft - this.config.marginRight)
+      .attr('height', this.config.svgHeight - this.config.marginTop - this.config.marginBottom);
 
     this.scale = new ScaleGenerator(
-      config.arcRange,
-      config.arcRadius
+      this.config.arcRange,
+      this.config.arcRadius
     )
     this.itemModel = new ItemModel()
     this.axisRenderer = new AxisRenderer(
-      group.append('g'),
-      group.append('g'),
-      config.radialLength,
+      this.group.append('g'),
+      this.group.append('g'),
+      this.config.radialLength,
       this.config,
       this.itemModel,
       this.scale
     )
     this.arcBarRenderer = new ArcBarRenderer(
-      group.append('g'),
+      this.group.append('g'),
       this.config,
       this.scale,
     )
+  }
+
+  changeConfig(customConfig: Partial<Config>) {
+    this.config = { ...this.config, ...customConfig }
+    const svg = d3.select(this.config.selector).append('svg')
+      .attr('width', this.config.svgWidth)
+      .attr('height', this.config.svgHeight);
+
+    this.group = svg.append('g')
+      .attr('transform', `translate(${this.config.marginLeft / 2}, ${this.config.marginTop / 2})`)
+      .attr('width', this.config.svgWidth - this.config.marginLeft - this.config.marginRight)
+      .attr('height', this.config.svgHeight - this.config.marginTop - this.config.marginBottom);
+
+    this.scale = new ScaleGenerator(
+      this.config.arcRange,
+      this.config.arcRadius
+    )
+    this.itemModel = new ItemModel()
+    this.axisRenderer = new AxisRenderer(
+      this.group.append('g'),
+      this.group.append('g'),
+      this.config.radialLength,
+      this.config,
+      this.itemModel,
+      this.scale
+    )
+    this.arcBarRenderer = new ArcBarRenderer(
+      this.group.append('g'),
+      this.config,
+      this.scale,
+    )
+    this.scale.update(this.itemModel)
+    this.axisRenderer.update()
+    this.arcBarRenderer.update(this.itemModel)
   }
 
 
@@ -144,21 +179,21 @@ export class Polar {
 
 
 // testing
-const polar = new Polar()
+// const polar = new Polar()
 
-d3.select('#added').on('click', () => {
-  const name = d3.select('#name').property('value')
-  const orders = d3.select('#orders').property('value')
-  polar.update([{ type: 'added', name, orders }])
-})
-
-d3.select('#updated').on('click', () => {
-  const name = d3.select('#name').property('value')
-  const orders = d3.select('#orders').property('value')
-  polar.update([{ type: 'modified', name, orders }])
-})
-
-d3.select('#removed').on('click', () => {
-  const name = d3.select('#name').property('value')
-  polar.update([{ type: 'removed', name }])
-})
+// d3.select('#added').on('click', () => {
+//   const name = d3.select('#name').property('value')
+//   const orders = d3.select('#orders').property('value')
+//   polar.update([{ type: 'added', name, orders }])
+// })
+//
+// d3.select('#updated').on('click', () => {
+//   const name = d3.select('#name').property('value')
+//   const orders = d3.select('#orders').property('value')
+//   polar.update([{ type: 'modified', name, orders }])
+// })
+//
+// d3.select('#removed').on('click', () => {
+//   const name = d3.select('#name').property('value')
+//   polar.update([{ type: 'removed', name }])
+// })

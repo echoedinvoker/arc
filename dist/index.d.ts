@@ -1,66 +1,46 @@
+import { ItemModel } from './ItemModel';
 export interface Config {
-    fields: {
-        id: string;
-        name: string;
-        value: string;
-    };
+    fieldsId: string;
+    fieldsName: string;
+    fieldsValue: string;
     selector: string;
-    svg: {
-        width: number;
-        height: number;
-    };
-    margin: {
-        top: number;
-        right: number;
-        bottom: number;
-        left: number;
-    };
-    radial: {
-        length: number;
-        strokeWidth: number;
-        text: {
-            size: number;
-            family: string;
-            color: string;
-            strokeDasharray: string;
-        };
-    };
-    x: {
-        text: {
-            size: number;
-            family: string;
-            color: string;
-        };
-    };
-    arc: {
-        radius: number;
-        range: number[];
-        strokeWidth: number;
-        text: {
-            size: number;
-            family: string;
-            color: string;
-        };
-    };
-    eventHandler: {
-        event: string;
-        handler: (d: any) => void;
-    };
-    animation: {
-        duration: number;
-    };
+    svgWidth: number;
+    svgHeight: number;
+    marginTop: number;
+    marginRight: number;
+    marginBottom: number;
+    marginLeft: number;
+    radialLength: number;
+    radialStrokeWidth: number;
+    radialTextSize: number;
+    radialTextFamily: string;
+    radialTextColor: string;
+    radialTextStrokeDasharray: string;
+    xTextSize: number;
+    xTextFamily: string;
+    xTextColor: string;
+    arcRadius: number;
+    arcRange: number[];
+    arcStrokeWidth: number;
+    arcTextSize: number;
+    arcTextFamily: string;
+    arcTextColor: string;
+    eventHandlerEvent: string;
+    eventHandlerHandler: (d: any) => void;
+    animationDuration: number;
 }
-interface hasType {
+export interface hasType {
     type: string;
     [key: string]: any;
 }
 export declare class Polar {
+    private group;
     private config;
     private scale;
-    private itemModel;
+    itemModel: ItemModel;
     private axisRenderer;
     private arcBarRenderer;
     constructor(customConfig?: Partial<Config>);
+    changeConfig(customConfig: Partial<Config>): void;
     update(data: hasType[]): void;
 }
-export {};

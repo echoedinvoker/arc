@@ -4328,8 +4328,8 @@ function createRadialAxis(scale, radius, config) {
                 .attr('x2', end.x)
                 .attr('y2', end.y)
                 .style('stroke', 'black')
-                .style('stroke-width', config.radial.strokeWidth)
-                .style('stroke-dasharray', config.radial.text.strokeDasharray);
+                .style('stroke-width', config.radialStrokeWidth)
+                .style('stroke-dasharray', config.radialTextStrokeDasharray);
             const textPosition = polarToCartesian(radius + 15, angle);
             const rotationAngle = angle * (180 / Math.PI);
             g.append('text')
@@ -4355,7 +4355,7 @@ function createArcAxis(scaleGenerator, config) {
         const endAngle = scaleGenerator.r.range().at(-1) * Math.PI / 180; // 轉換為弧度
         const radius = scaleGenerator.x.range()[0];
         const arc$1 = arc()
-            .innerRadius(radius - config.arc.strokeWidth)
+            .innerRadius(radius - config.arcStrokeWidth)
             .outerRadius(radius)
             .startAngle(startAngle)
             .endAngle(endAngle);
@@ -4381,24 +4381,24 @@ class AxisRenderer {
         this.arcAxisGroup
             .call(this.radialAxis)
             .call(this.arcAxis)
-            .attr('transform', `translate(${this.config.radial.length}, ${this.config.radial.length})`);
+            .attr('transform', `translate(${this.config.radialLength}, ${this.config.radialLength})`);
         this.arcAxisGroup.selectAll('text')
-            .attr('font-size', this.config.radial.text.size)
-            .attr('font-family', this.config.radial.text.family)
-            .attr('fill', this.config.radial.text.color);
+            .attr('font-size', this.config.radialTextSize)
+            .attr('font-family', this.config.radialTextFamily)
+            .attr('fill', this.config.radialTextColor);
         this.namesGroup
             .call(namesAxis)
-            .attr('transform', `translate(${this.config.radial.length - this.scale.x.range().at(0)}, ${this.config.radial.length})`);
+            .attr('transform', `translate(${this.config.radialLength - this.scale.x.range().at(0)}, ${this.config.radialLength})`);
         this.namesGroup.selectAll('text')
             .attr('transform', `rotate(-45)`)
             .attr('text-anchor', 'end')
-            .attr('font-size', this.config.x.text.size)
-            .attr('font-family', this.config.x.text.family)
-            .attr('fill', this.config.x.text.color)
+            .attr('font-size', this.config.xTextSize)
+            .attr('font-family', this.config.xTextFamily)
+            .attr('fill', this.config.xTextColor)
             .style('cursor', 'pointer');
         this.namesGroup.selectAll('text')
-            .on(this.config.eventHandler.event, (_, d) => {
-            this.config.eventHandler.handler(Array.from(this.itemModel.getMenu).find((item) => item.name === d));
+            .on(this.config.eventHandlerEvent, (_, d) => {
+            this.config.eventHandlerHandler(Array.from(this.itemModel.getMenu).find((item) => item.name === d));
         });
     }
 }
@@ -4415,11 +4415,14 @@ class ArcBarRenderer {
         this.cbMiddleAngleTween = (orders) => (this.cbStartAngle() + this.cbEndAngleTween(orders)) / 2;
         this.cbInnerRadius = (d) => this.scale.x(d.name);
         this.cbOuterRadius = (d) => this.scale.x(d.name) + this.scale.x.bandwidth();
-        this.cbTextPosition = (d) => ((this.cbInnerRadius(d) + this.cbOuterRadius(d)) / 2 - this.config.arc.text.size * 0.4) * -1;
+        this.cbTextPosition = (d) => ((this.cbInnerRadius(d) + this.cbOuterRadius(d)) / 2 - this.config.arcTextSize * 0.4) * -1;
+        this.remMax = 0;
     }
     update(items) {
         const { r, c } = this.scale;
-        const { getMenu: menu } = items;
+        const { getMenu: menu, getMax: max } = items;
+        const adjustRatio = this.remMax ? max / this.remMax : 1;
+        this.remMax = max;
         const arcGenerator = arc()
             .innerRadius(this.cbInnerRadius)
             .outerRadius(this.cbOuterRadius)
@@ -4429,9 +4432,10 @@ class ArcBarRenderer {
             .data(menu, (d) => d.name);
         arcs.exit().remove();
         arcs
-            .transition().duration(this.config.animation.duration)
+            .transition().duration(this.config.animationDuration)
             .attrTween('d', function (d) {
-            const i = interpolate$1(select(this).attr('data-prev-d'), d.orders);
+            const previousOrders = select(this).attr('data-prev-d');
+            const i = interpolate$1(previousOrders ? parseInt(previousOrders) * adjustRatio : 0, d.orders);
             return (t) => arcGenerator(Object.assign(Object.assign({}, d), { orders: i(t) }));
         })
             .on('end', function (d) {
@@ -4441,10 +4445,10 @@ class ArcBarRenderer {
             .attr('class', 'arc')
             .attr('fill', d => (d === null || d === void 0 ? void 0 : d.color) || c(d.name))
             .style('cursor', 'pointer')
-            .on(this.config.eventHandler.event, (_, d) => {
-            this.config.eventHandler.handler(d);
+            .on(this.config.eventHandlerEvent, (_, d) => {
+            this.config.eventHandlerHandler(d);
         })
-            .transition().duration(this.config.animation.duration)
+            .transition().duration(this.config.animationDuration)
             .attrTween('d', (d) => {
             const i = interpolate$1(0, d.orders);
             return (t) => arcGenerator(Object.assign(Object.assign({}, d), { orders: i(t) }));
@@ -4456,13 +4460,15 @@ class ArcBarRenderer {
             .data(items.getMenu, (d) => d.name);
         texts.exit().remove();
         texts
-            .transition().duration(this.config.animation.duration)
+            .attr('dy', this.cbTextPosition)
+            .transition().duration(this.config.animationDuration)
             .tween('text', function (d) {
             const i = interpolate$1(select(this).attr('data-prev-angle'), d.orders);
             return (t) => select(this).text(Math.floor(i(t)));
         })
             .attrTween('transform', function (d) {
-            const i = interpolate$1(select(this).attr('data-prev-angle'), d.orders);
+            const previousOrders = select(this).attr('data-prev-angle');
+            const i = interpolate$1(previousOrders ? parseInt(previousOrders) * adjustRatio : 0, d.orders);
             const rotation = (orders) => (r(0) + r(orders)) / 2;
             return (t) => `rotate(${rotation(i(t))})`;
         })
@@ -4471,13 +4477,13 @@ class ArcBarRenderer {
         });
         texts.enter().append('text')
             .attr('class', 'arc-text')
-            .style('font-size', this.config.arc.text.size)
-            .style('font-family', this.config.arc.text.family)
+            .style('font-size', this.config.arcTextSize)
+            .style('font-family', this.config.arcTextFamily)
             .style('pointer-events', 'none')
             .attr('text-anchor', 'middle')
             .attr('dy', this.cbTextPosition)
-            .attr('fill', this.config.arc.text.color)
-            .transition().duration(this.config.animation.duration)
+            .attr('fill', this.config.arcTextColor)
+            .transition().duration(this.config.animationDuration)
             .tween('text', function (d) {
             const i = interpolate$1(0, d.orders);
             return (t) => select(this).text(Math.floor(i(t)));
@@ -4489,7 +4495,7 @@ class ArcBarRenderer {
             .on('end', function (d) {
             select(this).attr('data-prev-angle', d.orders);
         });
-        this.group.attr('transform', `translate(${this.config.radial.length}, ${this.config.radial.length})`);
+        this.group.attr('transform', `translate(${this.config.radialLength}, ${this.config.radialLength})`);
     }
     polarToCartesian(radius, angle) {
         return [
@@ -4500,74 +4506,77 @@ class ArcBarRenderer {
 }
 
 const config = {
-    fields: {
-        id: 'name',
-        name: 'name',
-        value: 'orders'
-    },
+    fieldsId: 'name',
+    fieldsName: 'name',
+    fieldsValue: 'orders',
     selector: '.canvas',
-    svg: { width: 600, height: 600 },
-    margin: { top: 100, right: 20, bottom: 20, left: 100 },
-    radial: {
-        length: 300,
-        strokeWidth: 1,
-        text: {
-            size: 16,
-            family: 'Arial',
-            color: 'black',
-            strokeDasharray: '5,5'
-        }
-    },
-    x: {
-        text: {
-            size: 16,
-            family: 'Arial',
-            color: 'black',
-        }
-    },
-    arc: {
-        radius: 250,
-        range: [270, 330, 360],
-        strokeWidth: 0.5,
-        text: {
-            size: 16,
-            family: 'Arial',
-            color: 'black',
-        }
-    },
-    eventHandler: {
-        event: 'click',
-        handler: (d) => console.log(d)
-    },
-    animation: {
-        duration: 750
-    }
+    svgWidth: 600,
+    svgHeight: 600,
+    marginTop: 100,
+    marginRight: 20,
+    marginBottom: 20,
+    marginLeft: 100,
+    radialLength: 300,
+    radialStrokeWidth: 1,
+    radialTextSize: 16,
+    radialTextFamily: 'Arial',
+    radialTextColor: 'black',
+    radialTextStrokeDasharray: '5,5',
+    xTextSize: 16,
+    xTextFamily: 'Arial',
+    xTextColor: 'black',
+    arcRadius: 250,
+    arcRange: [270, 330, 360],
+    arcStrokeWidth: 0.5,
+    arcTextSize: 16,
+    arcTextFamily: 'Arial',
+    arcTextColor: 'black',
+    eventHandlerEvent: 'click',
+    eventHandlerHandler: (d) => console.log(d),
+    animationDuration: 750
 };
 class Polar {
     constructor(customConfig) {
         this.config = Object.assign(Object.assign({}, config), customConfig);
-        const svg = select(config.selector).append('svg')
-            .attr('width', config.svg.width)
-            .attr('height', config.svg.height);
-        const group = svg.append('g')
-            .attr('transform', `translate(${config.margin.left}, ${config.margin.top})`)
-            .attr('width', config.svg.width - config.margin.left - config.margin.right)
-            .attr('height', config.svg.height - config.margin.top - config.margin.bottom);
-        this.scale = new ScaleGenerator(config.arc.range, config.arc.radius);
+        const svg = select(this.config.selector).append('svg')
+            .attr('width', this.config.svgWidth)
+            .attr('height', this.config.svgHeight);
+        this.group = svg.append('g')
+            .attr('transform', `translate(${this.config.marginLeft / 2}, ${this.config.marginTop / 2})`)
+            .attr('width', this.config.svgWidth - this.config.marginLeft - this.config.marginRight)
+            .attr('height', this.config.svgHeight - this.config.marginTop - this.config.marginBottom);
+        this.scale = new ScaleGenerator(this.config.arcRange, this.config.arcRadius);
         this.itemModel = new ItemModel();
-        this.axisRenderer = new AxisRenderer(group.append('g'), group.append('g'), config.radial.length, this.config, this.itemModel, this.scale);
-        this.arcBarRenderer = new ArcBarRenderer(group.append('g'), this.config, this.scale);
+        this.axisRenderer = new AxisRenderer(this.group.append('g'), this.group.append('g'), this.config.radialLength, this.config, this.itemModel, this.scale);
+        this.arcBarRenderer = new ArcBarRenderer(this.group.append('g'), this.config, this.scale);
+    }
+    changeConfig(customConfig) {
+        this.config = Object.assign(Object.assign({}, this.config), customConfig);
+        const svg = select(this.config.selector).append('svg')
+            .attr('width', this.config.svgWidth)
+            .attr('height', this.config.svgHeight);
+        this.group = svg.append('g')
+            .attr('transform', `translate(${this.config.marginLeft / 2}, ${this.config.marginTop / 2})`)
+            .attr('width', this.config.svgWidth - this.config.marginLeft - this.config.marginRight)
+            .attr('height', this.config.svgHeight - this.config.marginTop - this.config.marginBottom);
+        this.scale = new ScaleGenerator(this.config.arcRange, this.config.arcRadius);
+        this.itemModel = new ItemModel();
+        this.axisRenderer = new AxisRenderer(this.group.append('g'), this.group.append('g'), this.config.radialLength, this.config, this.itemModel, this.scale);
+        this.arcBarRenderer = new ArcBarRenderer(this.group.append('g'), this.config, this.scale);
+        this.scale.update(this.itemModel);
+        this.axisRenderer.update();
+        this.arcBarRenderer.update(this.itemModel);
     }
     update(data) {
         data.forEach((d) => {
-            if (!(this.config.fields.id in d) && !(this.config.fields.name in d) && !(this.config.fields.value in d)) {
+            if (!(this.config.fieldsId in d) && !(this.config.fieldsName in d) && !(this.config.fieldsValue in d)) {
                 console.error(`Invalid data: ${JSON.stringify(d)}`);
                 return;
             }
             const entity = {
-                id: d[this.config.fields.id],
-                name: d[this.config.fields.name],
-                orders: d[this.config.fields.value]
+                id: d[this.config.fieldsId],
+                name: d[this.config.fieldsName],
+                orders: d[this.config.fieldsValue]
             };
             switch (d.type) {
                 case "added":
@@ -4589,11 +4598,23 @@ class Polar {
         this.arcBarRenderer.update(this.itemModel);
     }
 }
-const polar = new Polar();
-polar.update([
-    { 'name': 'soda', 'orders': 100, type: 'added' },
-    { 'name': 'soda2', 'orders': 150, type: 'added' },
-    { 'name': 'soda3', 'orders': 750, type: 'added' },
-]);
+// testing
+// const polar = new Polar()
+// d3.select('#added').on('click', () => {
+//   const name = d3.select('#name').property('value')
+//   const orders = d3.select('#orders').property('value')
+//   polar.update([{ type: 'added', name, orders }])
+// })
+//
+// d3.select('#updated').on('click', () => {
+//   const name = d3.select('#name').property('value')
+//   const orders = d3.select('#orders').property('value')
+//   polar.update([{ type: 'modified', name, orders }])
+// })
+//
+// d3.select('#removed').on('click', () => {
+//   const name = d3.select('#name').property('value')
+//   polar.update([{ type: 'removed', name }])
+// })
 
 export { Polar };
