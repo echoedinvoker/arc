@@ -10,7 +10,7 @@ export class Item {
 export class ItemModel {
   private menuMap: Map<string, Item>
 
-  constructor(data: { name: string, orders: number }[], id: string[]) {
+  constructor(data: { name: string, orders: number }[] = [], id: string[] = []) {
     this.menuMap = new Map(data.map((d, i) => [id[i], new Item(d.name, d.orders)]));
 
   }

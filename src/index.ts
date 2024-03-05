@@ -1,7 +1,11 @@
-import { Item, ItemModel } from './ItemModel';
+import * as d3 from 'd3';
+import { ItemModel } from './ItemModel';
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, onSnapshot } from 'firebase/firestore';
-import { ItemVisualizer } from './ItemVisualizer';
+import { getFirestore } from 'firebase/firestore';
+import { listenDishes } from './listenDishes';
+import { ScaleGenerator } from './ScaleGenerator';
+import { AxisRenderer } from './AxisRenderer';
+import { ArcBarRenderer } from './ArcBarRenderer';
 
 const firebaseConfig = {
   apiKey: "AIzaSyC4bKkedi8uLGBLokr7oZ_txm80qCCaE4I",
@@ -15,36 +19,33 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const itemVisualizer = new ItemVisualizer(
-  { selector: '.canvas', width: 600, height: 600 },
-  { top: 20, right: 20, bottom: 100, left: 100 },
-  [270, 330, 360],
-  300
-);
+const config = {
+  svg: { width: 600, height: 600 },
+  margin: { top: 100, right: 20, bottom: 20, left: 100 },
+  radialLength: 300,
+  arcLength: 250,
+  arcRange: [270, 330, 360]
 
-const itemModel = new ItemModel([], [])
-
-function listenDishes(db: any) {
-  const dishesCol = collection(db, 'dishes');
-  onSnapshot(dishesCol, (doc) => {
-    doc.docChanges().forEach((change: any) => {
-      switch (change.type) {
-        case "added":
-          itemModel.set(change.doc.data(), change.doc.id)
-          break;
-        case "modified": {
-          const item: Item = itemModel.getItem(change.doc.id)!
-          item.name = change.doc.data().name
-          item.orders = change.doc.data().orders
-          break;
-        }
-        case "removed":
-          itemModel.remove(change.doc.id)
-          break;
-      }
-    })
-    itemVisualizer.update(itemModel)
-  })
 }
+
+const svg = d3.select('.canvas').append('svg')
+  .attr('width', config.svg.width)
+  .attr('height', config.svg.height);
+
+const group = svg.append('g')
+  .attr('transform', `translate(${config.margin.left}, ${config.margin.top})`)
+  .attr('width', config.svg.width - config.margin.left - config.margin.right)
+  .attr('height', config.svg.height - config.margin.top - config.margin.bottom);
+
+export const scale = new ScaleGenerator(config.arcRange, config.arcLength)
+export const itemModel = new ItemModel()
+export const axisRenderer = new AxisRenderer(
+  group.append('g'),
+  group.append('g'),
+  config.radialLength,
+)
+export const arcBarRenderer = new ArcBarRenderer(
+  group.append('g'),
+)
 
 listenDishes(db)

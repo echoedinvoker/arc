@@ -6,11 +6,24 @@
     <title>Document</title>
 </head>
 <body>
+    <template id="add-new-item">
+      <div class="add-new-item">
+          <input type="text" class="add-new-item__input" placeholder="Add new item">
+          <button class="add-new-item__button">Add</button>
+      </div>
+    </template>
+    <template id="item">
+      <li></li>
+    </template>
+    <template id="item-container">
+      <div class="item-container">
+          <h2 class="item-container__title"></h2>
+          <ul class="item-container__list"></ul>
+      </div>
+    </template>
 
-    <div class="canvas">
-      <!-- <svg width="600" height="600"> -->
-      <!-- </svg> -->
-    </div>
+
+    <div class="canvas"></div>
 
     <script src="/bundle.js"></script> 
 </body>
