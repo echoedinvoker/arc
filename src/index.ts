@@ -19,13 +19,16 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const config = {
+export const config = {
   svg: { width: 600, height: 600 },
   margin: { top: 100, right: 20, bottom: 20, left: 100 },
   radialLength: 300,
   arcLength: 250,
-  arcRange: [270, 330, 360]
-
+  arcRange: [270, 330, 360],
+  eventHandler: {
+    event: 'click',
+    handler: (d: any) => console.log(d)
+  }
 }
 
 const svg = d3.select('.canvas').append('svg')

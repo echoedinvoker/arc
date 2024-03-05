@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import { ItemModel } from './ItemModel';
-import { scale } from '.';
+import { config, scale } from '.';
 
 export class ArcBarRenderer {
   constructor(
@@ -46,6 +46,9 @@ export class ArcBarRenderer {
     arcs.enter().append('path')
       .attr('class', 'arc')
       .attr('fill', d => c(d.name))
+      .on(config.eventHandler.event, (_, d) => {
+        config.eventHandler.handler(d)
+      })
       .transition().duration(750)
       .attrTween('d', (d: any) => {
         const i = d3.interpolate(0, d.orders);
@@ -97,7 +100,7 @@ export class ArcBarRenderer {
       })
 
 
-    this.group.attr('transform', `translate(300, 300)`)
+    this.group.attr('transform', `translate(${config.radialLength}, ${config.radialLength})`)
   }
 
   polarToCartesian(radius: number, angle: number): [number, number] {

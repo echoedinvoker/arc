@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import { createRadialAxis } from './axisRadias';
 import { createArcAxis } from './axisArc';
-import { scale } from '.';
+import { config, itemModel, scale } from '.';
 
 
 export class AxisRenderer {
@@ -36,9 +36,8 @@ export class AxisRenderer {
       .attr('font-family', 'Arial')
 
     this.namesGroup.selectAll('text')
-      .on('click', (event, d) => {
-        console.log(event.target);
-        console.log(d);
+      .on(config.eventHandler.event, (_, d) => {
+        config.eventHandler.handler(Array.from(itemModel.getMenu).find((item) => item.name === d)!)
       })
   }
 }
