@@ -34,5 +34,7 @@ export class AxisRenderer {
     this.namesGroup.selectAll('text')
       .attr('transform', `rotate(-45)`)
       .attr('text-anchor', 'end')
+      .attr('font-size', '16px')
+      .attr('font-family', 'Arial')
   }
 }

@@ -11,7 +11,7 @@ export class ArcBarRenderer {
   }
 
   update(items: ItemModel) {
-    const { r, x } = this.scale
+    const { r, x, c } = this.scale
     const { getMenu: menu } = items
 
     // 定義一個 d3.arc 來生成弧形
@@ -30,7 +30,6 @@ export class ArcBarRenderer {
 
 
     arcs
-      .attr('fill', 'orange')
       .transition().duration(750)
       .attrTween('d', function(d: any) {
         const i: Function = d3.interpolate(d3.select(this).attr('data-prev-d'), d.orders)
@@ -42,7 +41,7 @@ export class ArcBarRenderer {
 
     arcs.enter().append('path')
       .attr('class', 'arc')
-      .attr('fill', 'orange')
+      .attr('fill', d => c(d.name))
       .transition().duration(750)
       .attrTween('d', (d: any) => {
         const i = d3.interpolate(0, d.orders);
