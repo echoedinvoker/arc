@@ -1,3 +1,4 @@
+import { config } from ".";
 import { ScaleGenerator } from "./ScaleGenerator";
 import * as d3 from 'd3';
 
@@ -9,7 +10,7 @@ export function createArcAxis(scaleGenerator: ScaleGenerator) {
     const radius = scaleGenerator.x.range()[0];
 
     const arc: d3.Arc<unknown, d3.DefaultArcObject> = d3.arc()
-      .innerRadius(radius - 1)
+      .innerRadius(radius - config.arc.strokeWidth)
       .outerRadius(radius)
       .startAngle(startAngle)
       .endAngle(endAngle);

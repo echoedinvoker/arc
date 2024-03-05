@@ -10,26 +10,29 @@ export const config = {
   margin: { top: 100, right: 20, bottom: 20, left: 100 },
   radial: {
     length: 300,
+    strokeWidth: 1,
     text: {
       size: 16,
       family: 'Arial',
-      color: 'black'
+      color: 'black',
+      strokeDasharray: '5,5'
     }
   },
   x: {
     text: {
       size: 16,
       family: 'Arial',
-      color: 'black'
+      color: 'black',
     }
   },
   arc: {
     radius: 250,
     range: [270, 330, 360],
+    strokeWidth: 0.5,
     text: {
       size: 16,
       family: 'Arial',
-      color: 'black'
+      color: 'black',
     }
   },
   eventHandler: {

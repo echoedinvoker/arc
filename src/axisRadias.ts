@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import { ScaleGenerator } from './ScaleGenerator';
+import { config } from '.';
 
 export function createRadialAxis(scale: ScaleGenerator, radius: number): (g: d3.Selection<SVGGElement, unknown, HTMLElement, any>) => void {
   return function(g) {
@@ -17,7 +18,8 @@ export function createRadialAxis(scale: ScaleGenerator, radius: number): (g: d3.
         .attr('x2', end.x)
         .attr('y2', end.y)
         .style('stroke', 'black')
-        .style('stroke-dasharray', '5,5');
+        .style('stroke-width', config.radial.strokeWidth)
+        .style('stroke-dasharray', config.radial.text.strokeDasharray);
 
 
       const textPosition = polarToCartesian(radius + 15, angle);
