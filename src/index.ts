@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import _ from 'lodash';
 import { ItemModel } from './ItemModel';
 import { ScaleGenerator } from './ScaleGenerator';
 import { AxisRenderer } from './AxisRenderer';
@@ -106,7 +107,8 @@ export class Polar {
   private axisRenderer: AxisRenderer
   private arcBarRenderer: ArcBarRenderer
   constructor(customConfig?: Partial<Config>) {
-    this.config = { ...config, ...customConfig }
+    // this.config = { ...config, ...customConfig }
+    this.config = _.merge({}, config, customConfig)
     const svg = d3.select(config.selector).append('svg')
       .attr('width', config.svg.width)
       .attr('height', config.svg.height);
