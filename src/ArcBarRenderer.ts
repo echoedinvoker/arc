@@ -69,6 +69,7 @@ export class ArcBarRenderer {
     texts.exit().remove();
 
     texts
+      .attr('dy', this.cbTextPosition)
       .transition().duration(this.config.animation.duration)
       .tween('text', function(d: any) {
         const i: Function = d3.interpolate(d3.select(this).attr('data-prev-angle'), d.orders);
@@ -116,3 +117,4 @@ export class ArcBarRenderer {
     ];
   }
 }
+

@@ -102,7 +102,7 @@ interface hasType {
 export class Polar {
   private config: Config
   private scale: ScaleGenerator
-  private itemModel: ItemModel
+  itemModel: ItemModel
   private axisRenderer: AxisRenderer
   private arcBarRenderer: ArcBarRenderer
   constructor(customConfig?: Partial<Config>) {
@@ -167,8 +167,20 @@ export class Polar {
 }
 
 const polar = new Polar()
-polar.update([
-  { 'name': 'soda', 'orders': 100, type: 'added' },
-  { 'name': 'soda2', 'orders': 150, type: 'added' },
-  { 'name': 'soda3', 'orders': 750, type: 'added' },
-])
+
+d3.select('#added').on('click', () => {
+  const name = d3.select('#name').property('value')
+  const orders = d3.select('#orders').property('value')
+  polar.update([{ type: 'added', name, orders }])
+})
+
+d3.select('#updated').on('click', () => {
+  const name = d3.select('#name').property('value')
+  const orders = d3.select('#orders').property('value')
+  polar.update([{ type: 'modified', name, orders }])
+})
+
+d3.select('#removed').on('click', () => {
+  const name = d3.select('#name').property('value')
+  polar.update([{ type: 'removed', name }])
+})
