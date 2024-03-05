@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import { ItemModel } from './ItemModel';
 import { ScaleGenerator } from './ScaleGenerator';
-import { Config } from './index';
+import { Config } from './config';
 
 export class ArcBarRenderer {
   private remMax: number;

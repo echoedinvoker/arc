@@ -1,4 +1,4 @@
-import { Config } from "./index";
+import { Config } from "./config";
 import { ScaleGenerator } from "./ScaleGenerator";
 import * as d3 from 'd3';
 
