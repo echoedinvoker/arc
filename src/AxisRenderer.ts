@@ -25,15 +25,21 @@ export class AxisRenderer {
     this.arcAxisGroup
       .call(this.radialAxis)
       .call(this.arcAxis)
-      .attr('transform', `translate(300, 300)`);
+      .attr('transform', `translate(${config.radial.length}, ${config.radial.length})`)
+    this.arcAxisGroup.selectAll('text')
+      .attr('font-size', config.radial.text.size)
+      .attr('font-family', config.radial.text.family)
+      .attr('fill', config.radial.text.color)
     this.namesGroup
       .call(namesAxis)
-      .attr('transform', `translate(${300 - scale.x.range().at(0)!}, 300)`);
+      .attr('transform', `translate(${config.radial.length - scale.x.range().at(0)!}, ${config.radial.length})`);
     this.namesGroup.selectAll('text')
       .attr('transform', `rotate(-45)`)
       .attr('text-anchor', 'end')
-      .attr('font-size', '16px')
-      .attr('font-family', 'Arial')
+      .attr('font-size', config.x.text.size)
+      .attr('font-family', config.x.text.family)
+      .attr('fill', config.x.text.color)
+      .style('cursor', 'pointer')
 
     this.namesGroup.selectAll('text')
       .on(config.eventHandler.event, (_, d) => {

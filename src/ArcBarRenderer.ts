@@ -16,7 +16,7 @@ export class ArcBarRenderer {
   cbMiddleAngleTween = (orders: number) => (this.cbStartAngle() + this.cbEndAngleTween(orders)) / 2
   cbInnerRadius = (d: any) => scale.x(d.name)!
   cbOuterRadius = (d: any) => scale.x(d.name)! + scale.x.bandwidth()
-  cbTextPosition = (d: any) => ((this.cbInnerRadius(d) + this.cbOuterRadius(d)) / 2 - 4) * -1
+  cbTextPosition = (d: any) => ((this.cbInnerRadius(d) + this.cbOuterRadius(d)) / 2 - config.arc.text.size * 0.4) * -1
 
   update(items: ItemModel) {
     const { c } = scale
@@ -34,7 +34,7 @@ export class ArcBarRenderer {
     arcs.exit().remove();
 
     arcs
-      .transition().duration(750)
+      .transition().duration(config.animation.duration)
       .attrTween('d', function(d: any) {
         const i: Function = d3.interpolate(d3.select(this).attr('data-prev-d'), d.orders)
         return (t: any) => arcGenerator({ ...d, orders: i(t) })!;
@@ -45,11 +45,12 @@ export class ArcBarRenderer {
 
     arcs.enter().append('path')
       .attr('class', 'arc')
-      .attr('fill', d => c(d.name))
+      .attr('fill', d => d?.color || c(d.name))
+      .style('cursor', 'pointer')
       .on(config.eventHandler.event, (_, d) => {
         config.eventHandler.handler(d)
       })
-      .transition().duration(750)
+      .transition().duration(config.animation.duration)
       .attrTween('d', (d: any) => {
         const i = d3.interpolate(0, d.orders);
         return (t: any) => arcGenerator({ ...d, orders: i(t) })!;
@@ -65,7 +66,7 @@ export class ArcBarRenderer {
     texts.exit().remove();
 
     texts
-      .transition().duration(750)
+      .transition().duration(config.animation.duration)
       .tween('text', function(d: any) {
         const i: Function = d3.interpolate(d3.select(this).attr('data-prev-angle'), d.orders);
         return (t: any) => d3.select(this).text(Math.floor(i(t)));
@@ -82,11 +83,13 @@ export class ArcBarRenderer {
 
     texts.enter().append('text')
       .attr('class', 'arc-text')
-      .style('font-size', '16px')
-      .style('font-family', 'Arial')
+      .style('font-size', config.arc.text.size)
+      .style('font-family', config.arc.text.family)
+      .style('pointer-events', 'none')
       .attr('text-anchor', 'middle')
       .attr('dy', this.cbTextPosition)
-      .transition().duration(750)
+      .attr('fill', config.arc.text.color)
+      .transition().duration(config.animation.duration)
       .tween('text', function(d: any) {
         const i = d3.interpolate(0, d.orders);
         return (t: any) => d3.select(this).text(Math.floor(i(t)));
@@ -100,7 +103,7 @@ export class ArcBarRenderer {
       })
 
 
-    this.group.attr('transform', `translate(${config.radialLength}, ${config.radialLength})`)
+    this.group.attr('transform', `translate(${config.radial.length}, ${config.radial.length})`)
   }
 
   polarToCartesian(radius: number, angle: number): [number, number] {

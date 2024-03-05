@@ -28,7 +28,7 @@ export function createRadialAxis(scale: ScaleGenerator, radius: number): (g: d3.
         .attr('y', textPosition.y)
         .attr('dy', '.35em')
         .attr('text-anchor', 'middle')
-        .attr('transform', `rotate(${rotationAngle},${textPosition.x},${textPosition.y})`)
+        .attr('transform', `rotate(${rotationAngle + 90},${textPosition.x},${textPosition.y})`)
         .text(tick);
     });
   };

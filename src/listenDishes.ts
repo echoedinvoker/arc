@@ -1,6 +1,6 @@
 import { collection, onSnapshot } from 'firebase/firestore';
 import { Item } from './ItemModel';
-import { arcBarRenderer, axisRenderer, itemModel, scale } from '.';
+import { itemModel, update } from '.';
 
 export function listenDishes(db: any) {
   const dishesCol = collection(db, 'dishes');
@@ -21,8 +21,6 @@ export function listenDishes(db: any) {
           break;
       }
     })
-    scale.update(itemModel)
-    axisRenderer.update()
-    arcBarRenderer.update(itemModel)
+    update()
   })
 }
