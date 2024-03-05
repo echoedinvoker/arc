@@ -1,4 +1,4 @@
-import { Config } from "./Polar";
+import { Config } from "./index";
 import { ScaleGenerator } from "./ScaleGenerator";
 import * as d3 from 'd3';
 

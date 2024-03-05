@@ -1,12 +1,13 @@
 {
-  "name": "arc",
-  "version": "1.0.0",
+  "name": "polar-d3",
+  "version": "1.0.5",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack serve --open",
-    "build": "webpack"
+    "build": "webpack",
+    "build-lib": "rollup --config"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +17,9 @@
     "firebase": "^10.8.1"
   },
   "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "rollup": "^4.12.0",
     "@types/d3": "^7.4.3",
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.3",

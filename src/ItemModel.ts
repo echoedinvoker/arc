@@ -4,7 +4,8 @@ export class Item {
   constructor(
     public name: string,
     public orders: number,
-    public color?: string
+    public color?: string,
+    public id?: string | number
   ) { }
 }
 

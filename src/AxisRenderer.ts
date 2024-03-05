@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import { createRadialAxis } from './axisRadias';
 import { createArcAxis } from './axisArc';
-import { Config } from './Polar';
+import { Config } from './index';
 import { ItemModel } from './ItemModel';
 import { ScaleGenerator } from './ScaleGenerator';
 

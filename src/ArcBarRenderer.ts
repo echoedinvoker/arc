@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import { ItemModel } from './ItemModel';
 import { ScaleGenerator } from './ScaleGenerator';
-import { Config } from './Polar';
+import { Config } from './index';
 
 export class ArcBarRenderer {
   constructor(
