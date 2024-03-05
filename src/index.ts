@@ -1,99 +1,71 @@
 import * as d3 from 'd3';
-import _ from 'lodash';
 import { ItemModel } from './ItemModel';
 import { ScaleGenerator } from './ScaleGenerator';
 import { AxisRenderer } from './AxisRenderer';
 import { ArcBarRenderer } from './ArcBarRenderer';
 
 const config = {
-  fields: {
-    id: 'name',
-    name: 'name',
-    value: 'orders'
-  },
+  fieldsId: 'name',
+  fieldsName: 'name',
+  fieldsValue: 'orders',
   selector: '.canvas',
-  svg: { width: 600, height: 600 },
-  margin: { top: 100, right: 20, bottom: 20, left: 100 },
-  radial: {
-    length: 300,
-    strokeWidth: 1,
-    text: {
-      size: 16,
-      family: 'Arial',
-      color: 'black',
-      strokeDasharray: '5,5'
-    }
-  },
-  x: {
-    text: {
-      size: 16,
-      family: 'Arial',
-      color: 'black',
-    }
-  },
-  arc: {
-    radius: 250,
-    range: [270, 330, 360],
-    strokeWidth: 0.5,
-    text: {
-      size: 16,
-      family: 'Arial',
-      color: 'black',
-    }
-  },
-  eventHandler: {
-    event: 'click',
-    handler: (d: any) => console.log(d)
-  },
-  animation: {
-    duration: 750
-  }
+  svgWidth: 600,
+  svgHeight: 600,
+  marginTop: 100,
+  marginRight: 20,
+  marginBottom: 20,
+  marginLeft: 100,
+  radialLength: 300,
+  radialStrokeWidth: 1,
+  radialTextSize: 16,
+  radialTextFamily: 'Arial',
+  radialTextColor: 'black',
+  radialTextStrokeDasharray: '5,5',
+  xTextSize: 16,
+  xTextFamily: 'Arial',
+  xTextColor: 'black',
+  arcRadius: 250,
+  arcRange: [270, 330, 360],
+  arcStrokeWidth: 0.5,
+  arcTextSize: 16,
+  arcTextFamily: 'Arial',
+  arcTextColor: 'black',
+  eventHandlerEvent: 'click',
+  eventHandlerHandler: (d: any) => console.log(d),
+  animationDuration: 750
 }
 
 export interface Config {
-  fields: {
-    id: string
-    name: string
-    value: string
-  },
-  selector: string | HTMLElement
-  svg: { width: number, height: number }
-  margin: { top: number, right: number, bottom: number, left: number }
-  radial: {
-    length: number,
-    strokeWidth: number,
-    text: {
-      size: number,
-      family: string,
-      color: string,
-      strokeDasharray: string
-    }
-  },
-  x: {
-    text: {
-      size: number,
-      family: string,
-      color: string,
-    }
-  },
-  arc: {
-    radius: number,
-    range: number[]
-    strokeWidth: number,
-    text: {
-      size: number,
-      family: string,
-      color: string,
-    }
-  },
-  eventHandler: {
-    event: string,
-    handler: (d: any) => void
-  },
-  animation: {
-    duration: number
-  }
+  fieldsId: string
+  fieldsName: string
+  fieldsValue: string
+  selector: string
+  svgWidth: number
+  svgHeight: number
+  marginTop: number
+  marginRight: number
+  marginBottom: number
+  marginLeft: number
+  radialLength: number
+  radialStrokeWidth: number
+  radialTextSize: number
+  radialTextFamily: string
+  radialTextColor: string
+  radialTextStrokeDasharray: string
+  xTextSize: number
+  xTextFamily: string
+  xTextColor: string
+  arcRadius: number
+  arcRange: number[]
+  arcStrokeWidth: number
+  arcTextSize: number
+  arcTextFamily: string
+  arcTextColor: string
+  eventHandlerEvent: string
+  eventHandlerHandler: (d: any) => void
+  animationDuration: number
 }
+
 
 export interface hasType {
   type: string
@@ -107,23 +79,25 @@ export class Polar {
   private axisRenderer: AxisRenderer
   private arcBarRenderer: ArcBarRenderer
   constructor(customConfig?: Partial<Config>) {
-    // this.config = { ...config, ...customConfig }
-    this.config = _.merge({}, config, customConfig)
+    this.config = { ...config, ...customConfig }
     const svg = d3.select(config.selector).append('svg')
-      .attr('width', config.svg.width)
-      .attr('height', config.svg.height);
+      .attr('width', config.svgWidth)
+      .attr('height', config.svgHeight);
 
     const group = svg.append('g')
-      .attr('transform', `translate(${config.margin.left}, ${config.margin.top})`)
-      .attr('width', config.svg.width - config.margin.left - config.margin.right)
-      .attr('height', config.svg.height - config.margin.top - config.margin.bottom);
+      .attr('transform', `translate(${config.marginLeft / 2}, ${config.marginTop / 2})`)
+      .attr('width', config.svgWidth - config.marginLeft - config.marginRight)
+      .attr('height', config.svgHeight - config.marginTop - config.marginBottom);
 
-    this.scale = new ScaleGenerator(config.arc.range, config.arc.radius)
+    this.scale = new ScaleGenerator(
+      config.arcRange,
+      config.arcRadius
+    )
     this.itemModel = new ItemModel()
     this.axisRenderer = new AxisRenderer(
       group.append('g'),
       group.append('g'),
-      config.radial.length,
+      config.radialLength,
       this.config,
       this.itemModel,
       this.scale
@@ -138,14 +112,14 @@ export class Polar {
 
   update(data: hasType[]) {
     data.forEach((d) => {
-      if (!(this.config.fields.id in d) && !(this.config.fields.name in d) && !(this.config.fields.value in d)) {
+      if (!(this.config.fieldsId in d) && !(this.config.fieldsName in d) && !(this.config.fieldsValue in d)) {
         console.error(`Invalid data: ${JSON.stringify(d)}`)
         return
       }
       const entity = {
-        id: d[this.config.fields.id],
-        name: d[this.config.fields.name],
-        orders: d[this.config.fields.value]
+        id: d[this.config.fieldsId],
+        name: d[this.config.fieldsName],
+        orders: d[this.config.fieldsValue]
       };
       switch (d.type) {
         case "added":

@@ -10,7 +10,7 @@ export function createArcAxis(scaleGenerator: ScaleGenerator, config: Config) {
     const radius = scaleGenerator.x.range()[0];
 
     const arc: d3.Arc<unknown, d3.DefaultArcObject> = d3.arc()
-      .innerRadius(radius - config.arc.strokeWidth)
+      .innerRadius(radius - config.arcStrokeWidth)
       .outerRadius(radius)
       .startAngle(startAngle)
       .endAngle(endAngle);

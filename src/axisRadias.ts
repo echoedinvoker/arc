@@ -18,8 +18,8 @@ export function createRadialAxis(scale: ScaleGenerator, radius: number, config: 
         .attr('x2', end.x)
         .attr('y2', end.y)
         .style('stroke', 'black')
-        .style('stroke-width', config.radial.strokeWidth)
-        .style('stroke-dasharray', config.radial.text.strokeDasharray);
+        .style('stroke-width', config.radialStrokeWidth)
+        .style('stroke-dasharray', config.radialTextStrokeDasharray);
 
 
       const textPosition = polarToCartesian(radius + 15, angle);

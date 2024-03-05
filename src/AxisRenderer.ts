@@ -30,25 +30,25 @@ export class AxisRenderer {
     this.arcAxisGroup
       .call(this.radialAxis)
       .call(this.arcAxis)
-      .attr('transform', `translate(${this.config.radial.length}, ${this.config.radial.length})`)
+      .attr('transform', `translate(${this.config.radialLength}, ${this.config.radialLength})`)
     this.arcAxisGroup.selectAll('text')
-      .attr('font-size', this.config.radial.text.size)
-      .attr('font-family', this.config.radial.text.family)
-      .attr('fill', this.config.radial.text.color)
+      .attr('font-size', this.config.radialTextSize)
+      .attr('font-family', this.config.radialTextFamily)
+      .attr('fill', this.config.radialTextColor)
     this.namesGroup
       .call(namesAxis)
-      .attr('transform', `translate(${this.config.radial.length - this.scale.x.range().at(0)!}, ${this.config.radial.length})`);
+      .attr('transform', `translate(${this.config.radialLength - this.scale.x.range().at(0)!}, ${this.config.radialLength})`);
     this.namesGroup.selectAll('text')
       .attr('transform', `rotate(-45)`)
       .attr('text-anchor', 'end')
-      .attr('font-size', this.config.x.text.size)
-      .attr('font-family', this.config.x.text.family)
-      .attr('fill', this.config.x.text.color)
+      .attr('font-size', this.config.xTextSize)
+      .attr('font-family', this.config.xTextFamily)
+      .attr('fill', this.config.xTextColor)
       .style('cursor', 'pointer')
 
     this.namesGroup.selectAll('text')
-      .on(this.config.eventHandler.event, (_, d) => {
-        this.config.eventHandler.handler(Array.from(this.itemModel.getMenu).find((item) => item.name === d)!)
+      .on(this.config.eventHandlerEvent, (_, d) => {
+        this.config.eventHandlerHandler(Array.from(this.itemModel.getMenu).find((item) => item.name === d)!)
       })
   }
 }
