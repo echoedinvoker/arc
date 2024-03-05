@@ -4,12 +4,13 @@ import { ScaleGenerator } from './ScaleGenerator';
 import { Config } from './index';
 
 export class ArcBarRenderer {
+  private remMax: number;
   constructor(
     private group: d3.Selection<SVGGElement, unknown, HTMLElement, undefined>,
     private config: Config,
-    private scale: ScaleGenerator
+    private scale: ScaleGenerator,
   ) {
-
+    this.remMax = 0
   }
 
   cbStartAngle = () => this.scale.r(0) * Math.PI / 180
@@ -23,7 +24,9 @@ export class ArcBarRenderer {
 
   update(items: ItemModel) {
     const { r, c } = this.scale
-    const { getMenu: menu } = items
+    const { getMenu: menu, getMax: max } = items
+    const adjustRatio = this.remMax ? max / this.remMax : 1
+    this.remMax = max
 
     const arcGenerator = d3.arc()
       .innerRadius(this.cbInnerRadius)
@@ -39,7 +42,11 @@ export class ArcBarRenderer {
     arcs
       .transition().duration(this.config.animation.duration)
       .attrTween('d', function(d: any) {
-        const i: Function = d3.interpolate(d3.select(this).attr('data-prev-d'), d.orders)
+        const previousOrders = d3.select(this).attr('data-prev-d')
+        const i: Function = d3.interpolate(
+          previousOrders ? parseInt(previousOrders) * adjustRatio : 0,
+          d.orders
+        )
         return (t: any) => arcGenerator({ ...d, orders: i(t) })!;
       })
       .on('end', function(d: any) {
@@ -76,8 +83,11 @@ export class ArcBarRenderer {
         return (t: any) => d3.select(this).text(Math.floor(i(t)));
       })
       .attrTween('transform', function(d: any) {
-        const i: Function = d3.interpolate(d3.select(this).attr('data-prev-angle'), d.orders);
-
+        const previousOrders = d3.select(this).attr('data-prev-angle')
+        const i: Function = d3.interpolate(
+          previousOrders ? parseInt(previousOrders) * adjustRatio : 0,
+          d.orders
+        );
         const rotation = (orders: number) => (r(0) + r(orders)) / 2
         return (t: any) => `rotate(${rotation(i(t))})`;
       })

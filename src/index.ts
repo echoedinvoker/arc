@@ -55,7 +55,7 @@ export interface Config {
     name: string
     value: string
   },
-  selector: string
+  selector: string | HTMLElement
   svg: { width: number, height: number }
   margin: { top: number, right: number, bottom: number, left: number }
   radial: {
