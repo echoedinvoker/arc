@@ -19,7 +19,6 @@ export class AxisRenderer {
 
   update() {
     const scaleXCopied = scale.x.copy();
-    console.log('scaleXCopied', scaleXCopied);
     scaleXCopied.domain(scale.x.domain().slice().reverse());
     const namesAxis = d3.axisBottom(scaleXCopied)
 
@@ -35,5 +34,11 @@ export class AxisRenderer {
       .attr('text-anchor', 'end')
       .attr('font-size', '16px')
       .attr('font-family', 'Arial')
+
+    this.namesGroup.selectAll('text')
+      .on('click', (event, d) => {
+        console.log(event.target);
+        console.log(d);
+      })
   }
 }
