@@ -12,8 +12,8 @@ const polar = new Polar();
 # Add, Update, Remove data
 ```typescript
 polar.update([
-  { type: 'added', name: 'A', value: 10 },
-  { type: 'modified', name: 'A', value: 20 },
+  { type: 'added', name: 'A', orders: 10 },
+  { type: 'modified', name: 'A', orders: 20 },
   { type: 'removed', name: 'A' },
 ]);
 ```
