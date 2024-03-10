@@ -1,4 +1,4 @@
-> Stable version 3.0.8, later versions are unstable and no longer maintained.
+> Stable version 3.1.8, later versions are unstable and no longer maintained.
 
 # Demo
 
