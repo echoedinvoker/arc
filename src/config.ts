@@ -2,7 +2,7 @@
 export const config = {
   fieldsId: 'name',
   fieldsName: 'name',
-  fieldsValue: 'orders',
+  fieldsValue: 'value',
   selector: '.canvas',
   svgWidth: 600,
   svgHeight: 600,
@@ -22,6 +22,7 @@ export const config = {
   arcRadius: 250,
   arcRange: [270, 330, 360],
   arcStrokeWidth: 0.5,
+  arcFillOpacity: 0.7,
   arcTextSize: 16,
   arcTextFamily: 'Arial',
   arcTextColor: 'black',
@@ -53,6 +54,7 @@ export interface Config {
   arcRadius: number
   arcRange: number[]
   arcStrokeWidth: number
+  arcFillOpacity: number
   arcTextSize: number
   arcTextFamily: string
   arcTextColor: string

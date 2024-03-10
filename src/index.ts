@@ -4,12 +4,15 @@ import { ScaleGenerator } from './ScaleGenerator';
 import { AxisRenderer } from './AxisRenderer';
 import { ArcBarRenderer } from './ArcBarRenderer';
 import { Config, config } from './config';
-import { hasType } from './types';
 
+interface hasType {
+  type: string
+  [key: string]: any
+}
 
 export class Polar {
   private group!: d3.Selection<SVGGElement, unknown, HTMLElement, undefined>
-  private config: Config
+  public config: Config
   private scale!: ScaleGenerator
   itemModel!: ItemModel
   private axisRenderer!: AxisRenderer
@@ -33,7 +36,7 @@ export class Polar {
       this.config.arcRange,
       this.config.arcRadius
     )
-    this.itemModel = new ItemModel()
+    this.itemModel = new ItemModel(this)
     this.axisRenderer = new AxisRenderer(
       this.group.append('g'),
       this.group.append('g'),
@@ -56,8 +59,10 @@ export class Polar {
   }
 
   changeConfig(customConfig: Partial<Config>) {
+    const temp = this.itemModel.new
     this.config = { ...this.config, ...customConfig }
     this.init()
+    this.itemModel.new = temp
     this.updateInstances()
   }
 
@@ -71,7 +76,7 @@ export class Polar {
       const entity = {
         id: d[this.config.fieldsId],
         name: d[this.config.fieldsName],
-        orders: d[this.config.fieldsValue]
+        value: d[this.config.fieldsValue]
       };
       switch (d.type) {
         case "added":
@@ -79,7 +84,7 @@ export class Polar {
           break;
         case "modified":
           const item = this.itemModel.getItem(entity.id)!
-          item.orders = entity.orders
+          item.value = entity.value
           break;
         case "removed":
           this.itemModel.remove(entity.id)
@@ -89,25 +94,33 @@ export class Polar {
       }
     })
     this.updateInstances()
+    // testing
+    // const dataTextareaEl = document.getElementById('data') as HTMLTextAreaElement
+    // dataTextareaEl.value = JSON.stringify(Array.from(polar.itemModel.menuMap.values()), null, 2)
   }
 }
 
 
 // testing
-const polar = new Polar()
-d3.select('#added').on('click', () => {
-  const name = d3.select('#name').property('value')
-  const orders = d3.select('#orders').property('value')
-  polar.update([{ type: 'added', name, orders }])
-})
-
-d3.select('#updated').on('click', () => {
-  const name = d3.select('#name').property('value')
-  const orders = d3.select('#orders').property('value')
-  polar.update([{ type: 'modified', name, orders }])
-})
-
-d3.select('#removed').on('click', () => {
-  const name = d3.select('#name').property('value')
-  polar.update([{ type: 'removed', name }])
-})
+// const polar = new Polar()
+// d3.select('#added').on('click', () => {
+//   const name = d3.select('#name').property('value')
+//   const value = d3.select('#value').property('value')
+//   polar.update([{ type: 'added', name, value }])
+// })
+//
+// d3.select('#updated').on('click', () => {
+//   const name = d3.select('#name').property('value')
+//   const value = d3.select('#value').property('value')
+//   polar.update([{ type: 'modified', name, value }])
+// })
+//
+// d3.select('#removed').on('click', () => {
+//   const name = d3.select('#name').property('value')
+//   polar.update([{ type: 'removed', name }])
+// })
+// d3.select('#save').on('click', () => {
+//   const dataTextareaEl = document.getElementById('data') as HTMLTextAreaElement
+//   const data = JSON.parse(dataTextareaEl.value)
+//   polar.itemModel.new = data
+// })

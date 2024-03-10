@@ -1,19 +1,28 @@
 import * as d3 from 'd3';
+import { Polar } from './index';
 
 export class Item {
   constructor(
     public name: string,
-    public orders: number,
+    public value: number,
     public color?: string,
     public id?: string | number
   ) { }
 }
 
 export class ItemModel {
-  private menuMap: Map<string, Item>
+  public menuMap: Map<string, Item>
+  constructor(private polar: Polar, data: { name: string, value: number, color?: string }[] = [], id: string[] = []) {
+    this.menuMap = new Map(data.map((d, i) => [id[i], d?.color ? new Item(d.name, d.value, d.color) : new Item(d.name, d.value)]))
+  }
 
-  constructor(data: { name: string, orders: number, color?: string }[] = [], id: string[] = []) {
-    this.menuMap = new Map(data.map((d, i) => [id[i], d?.color ? new Item(d.name, d.orders, d.color) : new Item(d.name, d.orders)]))
+  get new() {
+    return Array.from(this.menuMap.values());
+  }
+
+  set new(data: Item[]) {
+    this.menuMap = new Map(data.map((d: any) => [d[this.polar.config.fieldsId], new Item(d.name, parseInt(d.value))]))
+    this.polar.updateInstances()
   }
 
   get getMenu() {
@@ -21,15 +30,15 @@ export class ItemModel {
   }
 
   get getMax() {
-    return d3.max(this.getMenu, d => d.orders) || 0;
+    return d3.max(this.getMenu, d => d.value) || 0;
   }
 
   get getNames() {
     return Array.from(this.getMenu).map(item => item.name);
   }
 
-  set(data: { name: string, orders: number, color?: string }, id: string) {
-    this.menuMap.set(id, data?.color ? new Item(data.name, data.orders, data.color) : new Item(data.name, data.orders))
+  set(data: { name: string, value: number, color?: string }, id: string) {
+    this.menuMap.set(id, data?.color ? new Item(data.name, data.value, data.color) : new Item(data.name, data.value))
   }
 
   remove(id: string) {

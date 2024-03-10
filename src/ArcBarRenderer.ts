@@ -14,10 +14,10 @@ export class ArcBarRenderer {
   }
 
   cbStartAngle = () => this.scale.r(0) * Math.PI / 180
-  cbEndAngle = (d: any) => this.scale.r(d.orders) * Math.PI / 180
-  cbEndAngleTween = (orders: number) => this.scale.r(orders) * Math.PI / 180
+  cbEndAngle = (d: any) => this.scale.r(d.value) * Math.PI / 180
+  cbEndAngleTween = (value: number) => this.scale.r(value) * Math.PI / 180
   cbMiddleAngle = (d: any) => (this.cbStartAngle() + this.cbEndAngle(d)) / 2
-  cbMiddleAngleTween = (orders: number) => (this.cbStartAngle() + this.cbEndAngleTween(orders)) / 2
+  cbMiddleAngleTween = (value: number) => (this.cbStartAngle() + this.cbEndAngleTween(value)) / 2
   cbInnerRadius = (d: any) => this.scale.x(d.name)!
   cbOuterRadius = (d: any) => this.scale.x(d.name)! + this.scale.x.bandwidth()
   cbTextPosition = (d: any) => ((this.cbInnerRadius(d) + this.cbOuterRadius(d)) / 2 - this.config.arcTextSize * 0.4) * -1
@@ -42,31 +42,32 @@ export class ArcBarRenderer {
     arcs
       .transition().duration(this.config.animationDuration)
       .attrTween('d', function(d: any) {
-        const previousOrders = d3.select(this).attr('data-prev-d')
+        const previousvalue = d3.select(this).attr('data-prev-d')
         const i: Function = d3.interpolate(
-          previousOrders ? parseInt(previousOrders) * adjustRatio : 0,
-          d.orders
+          previousvalue ? parseInt(previousvalue) * adjustRatio : 0,
+          d.value
         )
-        return (t: any) => arcGenerator({ ...d, orders: i(t) })!;
+        return (t: any) => arcGenerator({ ...d, value: i(t) })!;
       })
       .on('end', function(d: any) {
-        d3.select(this).attr('data-prev-d', d.orders);
+        d3.select(this).attr('data-prev-d', d.value);
       })
 
     arcs.enter().append('path')
       .attr('class', 'arc')
       .attr('fill', d => d?.color || c(d.name))
+      .attr('fill-opacity', this.config.arcFillOpacity)
       .style('cursor', 'pointer')
       .on(this.config.eventHandlerEvent, (_, d) => {
         this.config.eventHandlerHandler(d)
       })
       .transition().duration(this.config.animationDuration)
       .attrTween('d', (d: any) => {
-        const i = d3.interpolate(0, d.orders);
-        return (t: any) => arcGenerator({ ...d, orders: i(t) })!;
+        const i = d3.interpolate(0, d.value);
+        return (t: any) => arcGenerator({ ...d, value: i(t) })!;
       })
       .on('end', function(d: any) {
-        d3.select(this).attr('data-prev-d', d.orders)
+        d3.select(this).attr('data-prev-d', d.value)
       })
 
 
@@ -79,20 +80,20 @@ export class ArcBarRenderer {
       .attr('dy', this.cbTextPosition)
       .transition().duration(this.config.animationDuration)
       .tween('text', function(d: any) {
-        const i: Function = d3.interpolate(d3.select(this).attr('data-prev-angle'), d.orders);
+        const i: Function = d3.interpolate(d3.select(this).attr('data-prev-angle'), d.value);
         return (t: any) => d3.select(this).text(Math.floor(i(t)));
       })
       .attrTween('transform', function(d: any) {
-        const previousOrders = d3.select(this).attr('data-prev-angle')
+        const previousvalue = d3.select(this).attr('data-prev-angle')
         const i: Function = d3.interpolate(
-          previousOrders ? parseInt(previousOrders) * adjustRatio : 0,
-          d.orders
+          previousvalue ? parseInt(previousvalue) * adjustRatio : 0,
+          d.value
         );
-        const rotation = (orders: number) => (r(0) + r(orders)) / 2
+        const rotation = (value: number) => (r(0) + r(value)) / 2
         return (t: any) => `rotate(${rotation(i(t))})`;
       })
       .on('end', function(d: any) {
-        d3.select(this).attr('data-prev-angle', d.orders);
+        d3.select(this).attr('data-prev-angle', d.value);
       })
 
     texts.enter().append('text')
@@ -105,15 +106,15 @@ export class ArcBarRenderer {
       .attr('fill', this.config.arcTextColor)
       .transition().duration(this.config.animationDuration)
       .tween('text', function(d: any) {
-        const i = d3.interpolate(0, d.orders);
+        const i = d3.interpolate(0, d.value);
         return (t: any) => d3.select(this).text(Math.floor(i(t)));
       })
       .attrTween('transform', (d: any) => {
-        const i = d3.interpolate(0, d.orders);
+        const i = d3.interpolate(0, d.value);
         return (t: any) => `rotate(${(this.cbMiddleAngleTween(i(t)) * 180 / Math.PI)})`;
       })
       .on('end', function(d: any) {
-        d3.select(this).attr('data-prev-angle', d.orders);
+        d3.select(this).attr('data-prev-angle', d.value);
       })
 
 
