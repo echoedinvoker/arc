@@ -17,5 +17,6 @@ export function createArcAxis(scaleGenerator: ScaleGenerator, config: Config) {
 
     selection.append('path')
       .attr('d', arc as any)
+      .attr('stroke', config.arcStrokeColor)
   };
 }

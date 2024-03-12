@@ -4,14 +4,11 @@ export const config = {
   fieldsName: 'name',
   fieldsValue: 'value',
   selector: '.canvas',
-  svgWidth: 600,
-  svgHeight: 600,
-  marginTop: 100,
-  marginRight: 20,
-  marginBottom: 20,
-  marginLeft: 100,
+  xOffSet: 0,
+  yOffSet: 0,
   radialLength: 300,
   radialStrokeWidth: 1,
+  radialStrokeColor: 'black',
   radialTextSize: 16,
   radialTextFamily: 'Arial',
   radialTextColor: 'black',
@@ -22,6 +19,7 @@ export const config = {
   arcRadius: 250,
   arcRange: [270, 330, 360],
   arcStrokeWidth: 0.5,
+  arcStrokeColor: 'black',
   arcFillOpacity: 0.7,
   arcTextSize: 16,
   arcTextFamily: 'Arial',
@@ -36,14 +34,11 @@ export interface Config {
   fieldsName: string
   fieldsValue: string
   selector: string
-  svgWidth: number
-  svgHeight: number
-  marginTop: number
-  marginRight: number
-  marginBottom: number
-  marginLeft: number
+  xOffSet: number
+  yOffSet: number
   radialLength: number
   radialStrokeWidth: number
+  radialStrokeColor: string
   radialTextSize: number
   radialTextFamily: string
   radialTextColor: string
@@ -54,6 +49,7 @@ export interface Config {
   arcRadius: number
   arcRange: number[]
   arcStrokeWidth: number
+  arcStrokeColor: string
   arcFillOpacity: number
   arcTextSize: number
   arcTextFamily: string

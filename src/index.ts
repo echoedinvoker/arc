@@ -11,26 +11,22 @@ interface hasType {
 }
 
 export class Polar {
-  private group!: d3.Selection<SVGGElement, unknown, HTMLElement, undefined>
-  public config: Config
-  private scale!: ScaleGenerator
+  config: Config
+  set newConfig(config: Partial<Config>) {
+    this.changeConfig(config)
+  }
   itemModel!: ItemModel
+  private scale!: ScaleGenerator
   private axisRenderer!: AxisRenderer
   private arcBarRenderer!: ArcBarRenderer
-  constructor(customConfig?: Partial<Config>) {
+  constructor(private group: d3.Selection<SVGGElement, unknown, HTMLElement, undefined>, customConfig?: Partial<Config>) {
     this.config = { ...config, ...customConfig }
     this.init()
   }
 
   init() {
-    const svg = d3.select(this.config.selector).append('svg')
-      .attr('width', this.config.svgWidth)
-      .attr('height', this.config.svgHeight);
-
-    this.group = svg.append('g')
-      .attr('transform', `translate(${this.config.marginLeft / 2}, ${this.config.marginTop / 2})`)
-      .attr('width', this.config.svgWidth - this.config.marginLeft - this.config.marginRight)
-      .attr('height', this.config.svgHeight - this.config.marginTop - this.config.marginBottom);
+    // reset group contents
+    this.group.selectAll('*').remove()
 
     this.scale = new ScaleGenerator(
       this.config.arcRange,

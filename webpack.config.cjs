@@ -38,6 +38,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'main.esm.js',
+    // filename: 'bundle.js',
     library: {
       type: 'module',
     },
