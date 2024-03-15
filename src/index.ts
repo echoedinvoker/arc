@@ -48,10 +48,10 @@ export class Polar {
     )
   }
 
-  updateInstances() {
+  updateInstances(tempAnimatonDuration?: number) {
     this.scale.update(this.itemModel)
     this.axisRenderer.update()
-    this.arcBarRenderer.update(this.itemModel)
+    this.arcBarRenderer.update(this.itemModel, tempAnimatonDuration)
   }
 
   changeConfig(customConfig: Partial<Config>) {
@@ -59,7 +59,7 @@ export class Polar {
     this.config = { ...this.config, ...customConfig }
     this.init()
     this.itemModel.new = temp
-    this.updateInstances()
+    this.updateInstances(0)
   }
 
 

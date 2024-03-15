@@ -3,7 +3,6 @@ export const config = {
   fieldsId: 'name',
   fieldsName: 'name',
   fieldsValue: 'value',
-  selector: '.canvas',
   xOffSet: 0,
   yOffSet: 0,
   radialLength: 300,
@@ -33,7 +32,6 @@ export interface Config {
   fieldsId: string
   fieldsName: string
   fieldsValue: string
-  selector: string
   xOffSet: number
   yOffSet: number
   radialLength: number

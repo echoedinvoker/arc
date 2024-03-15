@@ -22,7 +22,7 @@ export class ArcBarRenderer {
   cbOuterRadius = (d: any) => this.scale.x(d.name)! + this.scale.x.bandwidth()
   cbTextPosition = (d: any) => ((this.cbInnerRadius(d) + this.cbOuterRadius(d)) / 2 - this.config.arcTextSize * 0.4) * -1
 
-  update(items: ItemModel) {
+  update(items: ItemModel, tempAnimatonDuration?: number) {
     const { r, c } = this.scale
     const { getMenu: menu, getMax: max } = items
     const adjustRatio = this.remMax ? max / this.remMax : 1
@@ -40,7 +40,7 @@ export class ArcBarRenderer {
     arcs.exit().remove();
 
     arcs
-      .transition().duration(this.config.animationDuration)
+      .transition().duration(tempAnimatonDuration ?? this.config.animationDuration)
       .attrTween('d', function(d: any) {
         const previousvalue = d3.select(this).attr('data-prev-d')
         const i: Function = d3.interpolate(
@@ -78,7 +78,7 @@ export class ArcBarRenderer {
 
     texts
       .attr('dy', this.cbTextPosition)
-      .transition().duration(this.config.animationDuration)
+      .transition().duration(tempAnimatonDuration ?? this.config.animationDuration)
       .tween('text', function(d: any) {
         const i: Function = d3.interpolate(d3.select(this).attr('data-prev-angle'), d.value);
         return (t: any) => d3.select(this).text(Math.floor(i(t)));

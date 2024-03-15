@@ -36,9 +36,9 @@ export class AxisRenderer {
       .attr('font-family', this.config.radialTextFamily)
       .attr('fill', this.config.radialTextColor)
     this.namesGroup
-      .transition().duration(this.config.animationDuration)
       .call(namesAxis)
-      .attr('transform', `translate(${this.config.radialLength - this.scale.x.range().at(0)!}, ${this.config.radialLength})`);
+      .attr('transform', `translate(${this.config.radialLength - this.scale.x.range().at(0)!}, ${this.config.radialLength})`)
+      .style('z-index', 100)
     this.namesGroup.selectAll('text')
       .attr('transform', `rotate(-45)`)
       .attr('text-anchor', 'end')

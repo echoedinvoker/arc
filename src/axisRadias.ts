@@ -17,7 +17,7 @@ export function createRadialAxis(scale: ScaleGenerator, radius: number, config: 
         .attr('y1', 0)
         .attr('x2', end.x)
         .attr('y2', end.y)
-        .style('stroke', 'black')
+        .style('stroke', config.radialStrokeColor)
         .style('stroke-width', config.radialStrokeWidth)
         .style('stroke-dasharray', config.radialTextStrokeDasharray);
 
